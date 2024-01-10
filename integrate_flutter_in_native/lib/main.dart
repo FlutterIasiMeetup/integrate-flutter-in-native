@@ -49,6 +49,9 @@ class _MyHomePageState extends State<MyHomePage> {
   static const MethodChannel _methodChannel =
       MethodChannel('com.integrateFlutterInNative.channel');
 
+  int _counter = 0;
+  String? _token;
+
   @override
   void initState() {
     super.initState();
@@ -63,8 +66,6 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  int _counter = 0;
-
   void _incrementCounter() {
     setState(() {
       // This call to setState tells the Flutter framework that something has
@@ -76,19 +77,32 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void _dimsmiss() {
+    _methodChannel.invokeMethod("dismiss");
+  }
+
+  void _getTokenFromNative() async {
+    String? token = await _methodChannel.invokeMethod("getToken");
+    if (token != null) {
+      setState(() {
+        _token = token;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.close),
+            onPressed: _dimsmiss,
+          ),
+        ],
       ),
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
@@ -117,6 +131,14 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
+            ElevatedButton(
+              onPressed: _getTokenFromNative,
+              child: Text('Get token from native'),
+            ),
+            if (_token != null)
+              Text(
+                'You token is: $_token',
+              ),
           ],
         ),
       ),
