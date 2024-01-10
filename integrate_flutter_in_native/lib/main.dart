@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 void main() => runApp(const MyApp());
 
@@ -45,6 +46,23 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  static const MethodChannel _methodChannel =
+      MethodChannel('com.integrateFlutterInNative.channel');
+
+  @override
+  void initState() {
+    super.initState();
+    _methodChannel.setMethodCallHandler(_handleMethodCall);
+  }
+
+  Future<dynamic> _handleMethodCall(MethodCall methodCall) async {
+    switch (methodCall.method) {
+      case 'incrementCounter':
+        _incrementCounter();
+        break;
+    }
+  }
+
   int _counter = 0;
 
   void _incrementCounter() {
